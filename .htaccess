@@ -1,0 +1,21 @@
+# gzipで圧縮して転送する
+<IfModule mod_deflate.c>
+  # 画像等は再圧縮させない
+  SetEnvIfNoCase Request_URI \.(?:gif|jpe?g|png|ico)$ no-gzip dont-vary
+  # プロキシサーバに圧縮済みのキャッシュを送信する対象を制限させる
+  Header append Vary Accept-Encoding env=!dont-vary
+
+  # 圧縮するコンテンツタイプを指定
+  AddOutputFilterByType DEFLATE image/svg+xml
+</IfModule>
+
+<IfModule mod_expires.c>
+  ExpiresActive On
+
+  # 基本的にはキャッシュさせない
+  ExpiresDefault "access plus 1 second"
+  ExpiresByType image/gif "access plus 3 week"
+  ExpiresByType image/jpeg "access plus 3 week"
+  ExpiresByType image/png "access plus 3 week"
+  ExpiresByType image/svg+xml "access plus 3 week"
+</IfModule>
